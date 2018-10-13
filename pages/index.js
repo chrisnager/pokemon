@@ -1,40 +1,41 @@
-import axios from 'axios';
-import Link from 'next/link';
+import Link from 'next/link'
+import { compose, withState, withHandlers, lifecycle } from 'recompose'
+import axios from 'axios'
 
-const PostLink = props => (
+const PokemonLink = ({ id }) => (
   <li>
-    <Link as={`/p/${props.id}`} href={`/pokemon?id=${props.id}`}>
-      <a>{props.name}</a>
+    <Link as={`/p/${id}`} href={`/pokemon?id=${id}`}>
+      <a>{id}</a>
     </Link>
   </li>
-);
+)
 
-export default class Index extends React.Component {
-  state = { characters: [] };
+const Index = ({ characters }) => (
+  <div>
+    <h1>Pokémon</h1>
+    <ul>
+      {characters.map(({ name }) => (
+        <PokemonLink key={name} id={name} />
+      ))}
+    </ul>
+  </div>
+)
 
-  getListOfAllPokemon = id =>
-    axios
-      .get(`https://pokeapi.co/api/v2/pokemon/?limit=9999`)
-      .then(data => {
-        console.log('got the data', data.data);
-        this.setState({ characters: data.data.results });
-      })
-      .catch(err => console.log(err));
-
-  componentDidMount() {
-    this.getListOfAllPokemon();
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Pokémon</h1>
-        <ul>
-          {this.state.characters.map(character => (
-            <PostLink key={character.name} id={character.name} name={character.name} />
-          ))}
-        </ul>
-      </div>
-    );
-  }
-}
+export default compose(
+  withState('characters', 'updateCharacters', []),
+  withHandlers({
+    getListOfAllPokemon: ({ updateCharacters }) => () =>
+      axios
+        .get('https://pokeapi.co/api/v2/pokemon/?limit=9999')
+        .then(({ data }) => {
+          console.log(data.results)
+          updateCharacters(data.results)
+        })
+        .catch(err => console.log(err))
+  }),
+  lifecycle({
+    componentDidMount() {
+      this.props.getListOfAllPokemon()
+    }
+  })
+)(Index)
