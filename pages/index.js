@@ -27,10 +27,7 @@ export default compose(
     getListOfAllPokemon: ({ updateCharacters }) => () =>
       axios
         .get('https://pokeapi.co/api/v2/pokemon/?limit=9999')
-        .then(({ data }) => {
-          console.log(data.results)
-          updateCharacters(data.results)
-        })
+        .then(({ data }) => updateCharacters(data.results))
         .catch(err => console.log(err))
   }),
   lifecycle({
