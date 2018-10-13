@@ -1,9 +1,16 @@
+import Link from 'next/link'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { withRouter } from 'next/router'
-import axios from 'axios'
+import { get } from '../services/api'
+import Ops from '../config/ops'
 
 const Pokemon = ({ router, data }) => (
   <div>
+    <nav>
+      <Link href="/">
+        <a>Home</a>
+      </Link>
+    </nav>
     <h1>{router.query.id}</h1>
     {Object.values(data.sprites)
       .filter(i => i)
@@ -17,15 +24,18 @@ export default compose(
   withRouter,
   withState('data', 'updateData', { sprites: {} }),
   withHandlers({
-    getPokemonById: ({ updateData }) => id =>
-      axios
-        .get(`https://pokeapi.co/api/v2/pokemon/${id}/`)
-        .then(({ data }) => updateData(data))
-        .catch(err => console.log(err))
+    getPokemon: ({ updateData }) => async id => {
+      try {
+        const { data } = await get(Ops.Pokemon.getPokemonById(id))
+        updateData(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }),
   lifecycle({
     componentDidMount() {
-      this.props.getPokemonById(this.props.router.query.id)
+      this.props.getPokemon(this.props.router.query.id)
     }
   })
 )(Pokemon)

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { compose, withState, withHandlers, lifecycle } from 'recompose'
-import axios from 'axios'
+import { get } from '../services/api'
+import Ops from '../config/ops'
 
 const PokemonLink = ({ id }) => (
   <li>
@@ -24,11 +25,14 @@ const Index = ({ characters }) => (
 export default compose(
   withState('characters', 'updateCharacters', []),
   withHandlers({
-    getListOfAllPokemon: ({ updateCharacters }) => () =>
-      axios
-        .get('https://pokeapi.co/api/v2/pokemon/?limit=9999')
-        .then(({ data }) => updateCharacters(data.results))
-        .catch(err => console.log(err))
+    getListOfAllPokemon: ({ updateCharacters }) => async () => {
+      try {
+        const { data } = await get(Ops.Pokemon.getList())
+        updateCharacters(data.results)
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }),
   lifecycle({
     componentDidMount() {
