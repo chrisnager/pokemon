@@ -3,10 +3,10 @@ import { compose, withState, withHandlers, lifecycle } from 'recompose'
 import { get } from '../services/api'
 import Ops from '../config/ops'
 
-const PokemonLink = ({ id }) => (
+const PokemonLink = ({ id, name }) => (
   <li>
     <Link as={`/p/${id}`} href={`/pokemon?id=${id}`}>
-      <a>{id}</a>
+      <a>{name}</a>
     </Link>
   </li>
 )
@@ -15,8 +15,8 @@ const Index = ({ characters }) => (
   <div>
     <h1>Pokémon</h1>
     <ul>
-      {characters.map(({ name }) => (
-        <PokemonLink key={name} id={name} />
+      {characters.map(({ name, url }) => (
+        <PokemonLink key={name} name={name} id={url.slice(34, -1)} />
       ))}
     </ul>
   </div>
