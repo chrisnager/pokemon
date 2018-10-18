@@ -17,7 +17,6 @@ const Pokemon = ({ router, data, evolution }) => (
       .map((src, index) => (
         <img key={src} alt={`${router.query.id} stance ${index + 1}`} {...{ src }} />
       ))}
-
     {evolution && (
       <div>
         Evolves to{' '}

@@ -6,7 +6,7 @@ const endpoints = {
 }
 
 class PokemonService {
-  getList = () => `${endpoints.pokemon}/?limit=9999`
+  getList = () => `${endpoints.pokemon}/`
   getPokemonById = id => `${endpoints.pokemon}/${id}/`
 }
 
